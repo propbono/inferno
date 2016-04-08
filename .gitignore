@@ -1,0 +1,7 @@
+*.mxml
+*.pdf
+__pycache__
+*.txt
+*jdf
+.idea
+Inferno-venv
