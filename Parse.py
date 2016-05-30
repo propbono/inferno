@@ -3,13 +3,13 @@ import os
 import pypdftk
 
 
-from Layout import *
+from layout import *
 from bs4 import BeautifulSoup
 
 
-from Stock import Stock
-from ProductGroup import ProductGroup
-from Product import Product
+from stock import Stock
+from productGroup import ProductGroup
+from product import Product
 
 
 class Parse(object):
@@ -132,38 +132,6 @@ class Parse(object):
         else:
             return None
 
-
-
-files = [f for f in os.listdir() if f.endswith(".mxml")]
-
-print("XML: BeautifulSoup")
-for file in files:
-    xml = Parse(file)
-    print()
-    print("Project Name: ", xml.get_project_name_bs4())
-    print("Printing press: ", xml.get_printing_press_bs4())
-    print("Project stocks: ")
-    for stock in xml.get_project_stocks_bs4():
-        print(" ",str(stock))
-
-    print("Projects product groups: ")
-    for group in xml.get_product_groups_bs4():
-        print(" ",str(group))
-
-    print("Project Layouts")
-    for layout in xml.get_layouts_bs4():
-        print(" Name: ", layout.name)
-        print(" Quantity: ", layout.quantity)
-        print(" Printing Method: ", layout.printing_method)
-        print(" Press: ", layout.press)
-        print(" Usage: ", layout.percentage)
-        print(" Stock: ", layout.stock)
-        print(" Layout groups: ")
-        for group in layout.product_groups:
-            print("     ", group)
-        print(" Layout products: ")
-        for product in layout.components:
-            print("     ", product.name)
 
 
 
