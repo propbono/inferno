@@ -1,8 +1,3 @@
-from xml.dom import minidom
-import os
-import pypdftk
-
-
 from layout import *
 from bs4 import BeautifulSoup
 

@@ -1,6 +1,3 @@
-import email.contentmanager
-
-
 class Product(object):
     def __init__(self, name = None, ref_number = None, upload_number = None,
                  width = None, height = None, notes = None, typo = None,
