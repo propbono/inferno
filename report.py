@@ -8,7 +8,7 @@ class Report(object):
 
     def __init__(self):
 
-        self.headers = ["plated_date", "project_name", "printing_press", "layout_name", "stock_name", "notes", "stock_size", "printing_method", "quantity"]
+        self.headers = ["plated_date", "project_name", "printing_press", "layout_name", "stock_name", "notes", "stock_size", "printing_method", "quantity", "number_of_clients"]
         self.program_dir = os.path.dirname(sys.argv[0])
         self.prepped_file = "N:\\"
         self.mxml_dir_out = os.path.join(self.prepped_file, "OUT")
@@ -28,6 +28,7 @@ class Report(object):
                 date = self.__modification_date(location)
 
                 for layout in xml.get_layouts_bs4():
+
                     row = {}
                     row["plated_date"] = date
                     row["project_name"] = project_name
@@ -38,7 +39,12 @@ class Report(object):
                     row["stock_size"] = layout.stock.height + "x" + layout.stock.width
                     row["printing_method"] = layout.printing_method
                     row["quantity"] = layout.quantity
+
+                    product_count = [p.name.split("-")[2] for p in layout.products]
+                    row["number_of_clients"] = len(set(product_count))
                     report.setdefault("1", []).append(row)
+
+
 
             except Exception as e:
                 print("Error '{0}' occured. Arguments {1}.".format(e, e.args))
@@ -70,7 +76,8 @@ class Report(object):
 
     def __modification_date(self, filename):
         t = os.path.getmtime(filename)
-        return datetime.datetime.fromtimestamp(t)
+        date = datetime.datetime.fromtimestamp(t)
+        return date.strftime("%Y-%m-%d")
 
 
 
