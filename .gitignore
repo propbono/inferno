@@ -7,4 +7,5 @@ __pycache__
 Inferno-venv
 /In
 /Out
-
+client_secret.json
+.credentials
