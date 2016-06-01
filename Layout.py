@@ -7,7 +7,7 @@ class Layout(object):
         self.quantity = quantity
         self.press = press
         self.stock = stock
-        self.components = list_of_products
+        self.products = list_of_products
         self.percentage = percentage
         self.product_groups = product_groups
         

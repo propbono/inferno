@@ -72,8 +72,8 @@ class Parse(object):
             layout.press = self.printing_press
             layout.stock = self.__find_proper_stock(layout_soup)
             layout.percentage = layout_soup["percentagesheetuse"]
-            layout.components = self.__find_products_for(layout_soup)
-            layout.product_groups = self.__find_product_groups_for(layout.components)
+            layout.products = self.__find_products_for(layout_soup)
+            layout.product_groups = self.__find_product_groups_for(layout.products)
 
             layout_list.append(layout)
         return layout_list

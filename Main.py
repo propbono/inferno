@@ -1,8 +1,32 @@
-from parse import *
-from report import Report
-import csv
+from __future__ import print_function
 
-print("XML: BeautifulSoup")
+import sys
+
+from report import Report
+
+import csv
+import os
+
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+
+
+SCOPE = 'https://www.googleapis.com/feeds'
+CLIENT_SECRET_FILE = 'client_secret.json'
+APPLICATION_NAME = 'Google Sheets API Python Quickstart'
+
+def get_credentials():
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(CLIENT_SECRET_FILE,SCOPE)
+    return credentials
+
+def get_report_sheet():
+    credentials = get_credentials()
+    gc = gspread.authorize(credentials)
+
+    spreadsheet_id = "1j1vJuOy3cGW-bzyr7MDjpMcD_L1DjCJOTOAruRb7JJo"
+    sheet = gc.open_by_key(spreadsheet_id).sheet1
+    return sheet
 
 
 def get_missing():
@@ -27,6 +51,8 @@ def get_prepped():
 if __name__ == "__main__":
     report = Report()
     report.save_report_to_csv()
+
+    #spreadsheet = get_report_sheet()
 
 
     # missing = get_missing()
