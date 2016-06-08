@@ -6,21 +6,28 @@ from parse import Parse
 
 class Report(object):
 
-    def __init__(self):
+    def __init__(self, files_to_process = None):
 
-        self.headers = ["plated_date", "project_name", "printing_press", "layout_name", "stock_name", "notes", "stock_size", "printing_method", "quantity", "number_of_clients"]
+        self.headers = ["Date", "Name", "Layout","Stock", "Stock Size",
+                        "Printing Method", "Quantity","Status",
+                        "Clients", "Notes"]
+
         self.program_dir = os.path.dirname(sys.argv[0])
         self.prepped_file = "N:\\"
         self.mxml_dir_out = os.path.join(self.prepped_file, "OUT")
-        self.mxml_dir_in = os.path.join(self.prepped_file, "IN")
-        self.files_to_process = [f for f in os.listdir(self.mxml_dir_in) if f.endswith(".mxml")]
+        # self.mxml_dir_in = os.path.join(self.prepped_file, "IN")
+        self.mxml_dir_in = os.path.join(self.program_dir, "mxml_source")
+        self.files_to_process = files_to_process or self.__get_files_for_testing()
         self.products = []
+
+    def __get_files_for_testing(self):
+        return [f for f in os.listdir(
+                self.mxml_dir_in) if f.endswith(".mxml")]
 
     def __generate_report(self, files_to_process):
         report = {}
         for file in files_to_process:
             try:
-                # print_info_about_layouts()
                 location = os.path.join(self.mxml_dir_in, file)
                 xml = Parse(location)
                 project_name = xml.get_project_name_bs4()
@@ -30,18 +37,21 @@ class Report(object):
                 for layout in xml.get_layouts_bs4():
 
                     row = {}
-                    row["plated_date"] = date
-                    row["project_name"] = project_name
-                    row["printing_press"] = printing_press
-                    row["layout_name"] = layout.name
-                    row["stock_name"] = layout.stock.name
-                    row["notes"] = [g + ", " for g in layout.product_groups]
-                    row["stock_size"] = layout.stock.height + "x" + layout.stock.width
-                    row["printing_method"] = layout.printing_method
-                    row["quantity"] = layout.quantity
+                    row["Date"] = date
+                    row["Name"] = project_name
+                    row["Layout"] = layout.name
+                    row["Notes"] =""
+                    for group in layout.product_groups:
+                        row["Notes"] += " " + group
+                    row["Stock"] = layout.stock.name
+                    row["Stock Size"] = layout.stock.height + "x" + \
+                                       layout.stock.width
+                    row["Printing Method"] = layout.printing_method
+                    row["Quantity"] = layout.quantity
 
                     product_count = [p.name.split("-")[2] for p in layout.products]
-                    row["number_of_clients"] = len(set(product_count))
+                    row["Clients"] = len(set(product_count))
+                    row["Status"] = ""
                     report.setdefault("1", []).append(row)
 
 
@@ -59,6 +69,11 @@ class Report(object):
                 writer = csv.DictWriter(csv_file, fieldnames = self.headers)
                 writer.writeheader()
                 writer.writerows(report[key])
+
+    def return_dictionary(self):
+        report = self.__generate_report(self.files_to_process)
+        dictionary = [report[entry] for entry in report.keys()][0]
+        return dictionary
 
     def generate_product_list(self):
         products = []
