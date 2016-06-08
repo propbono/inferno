@@ -1,66 +1,50 @@
 from __future__ import print_function
 
-import sys
-
 from report import Report
-
-import csv
-import os
 
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 
 
-SCOPE = 'https://www.googleapis.com/feeds'
+SCOPE = ['https://spreadsheets.google.com/feeds']
 CLIENT_SECRET_FILE = 'client_secret.json'
-APPLICATION_NAME = 'Google Sheets API Python Quickstart'
+APPLICATION_NAME = 'App Engine default service account'
 
-def get_credentials():
+def __get_credentials():
     credentials = ServiceAccountCredentials.from_json_keyfile_name(CLIENT_SECRET_FILE,SCOPE)
     return credentials
 
-def get_report_sheet():
-    credentials = get_credentials()
+def __get_worksheet(credentials):
     gc = gspread.authorize(credentials)
-
     spreadsheet_id = "1j1vJuOy3cGW-bzyr7MDjpMcD_L1DjCJOTOAruRb7JJo"
-    sheet = gc.open_by_key(spreadsheet_id).sheet1
-    return sheet
+    sheet = gc.open_by_key(spreadsheet_id)
+    worksheet = sheet.worksheet("Sheet2")
+    return worksheet
 
+def __get_values_in_order(row):
+    return [[row["Date"], row["Name"], row["Layout"], row["Stock"],
+             row["Stock "
+                 "Size"],
+             row["Printing Method"], row["Quantity"], row["Status"],
+             row["Clients"], row["Notes"]] for key in row][0]
 
-def get_missing():
-    path = os.path.join("N:\\" ,"OUT")
-    full_path = os.path.join(path, "numbers_m.csv")
-    # with open(full_path, 'rb') as csv_file:
-    #     reader = csv.DictReader(csv_file, fieldnames="UploadNumber")
-    #     # list = []
-    #     # for i in reader:
-    #     #     list.append(i)
-    reader = csv.DictReader(open(full_path))
-    return reader #list
+def add_reports_to_google():
+    credentials = __get_credentials()
 
-def get_prepped():
-    path = os.path.join("Q:\\")
-    pdf_list = [p[:7] for p in sorted(os.listdir(path)) if
-                    p.upper().startswith("U") and p.lower().endswith('.pdf')]
+    worksheet = __get_worksheet(credentials)
 
-    return pdf_list
+    rows_count = worksheet.row_count
+    report = Report()
+    dictionary = report.return_dictionary()
+
+    end_of_file = rows_count + 1
+    for key in dictionary:
+        values = __get_values_in_order(key)
+        worksheet.insert_row(values, end_of_file)
+        end_of_file += 1
 
 
 if __name__ == "__main__":
-    report = Report()
-    report.save_report_to_csv()
-
-    #spreadsheet = get_report_sheet()
-
-
-    # missing = get_missing()
-    # products = get_prepped() #report.generate_product_list()
-    # for miss in missing:
-    #     if not miss["UploadNumber"] in products:
-    #         print(miss["UploadNumber"])#missing.pop(miss)
-    #         del missing[miss]
-
-
+    add_reports_to_google()
 
