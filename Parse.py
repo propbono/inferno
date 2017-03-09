@@ -88,7 +88,7 @@ class Parse(object):
             product.height = product_soup["finishedtrimheight"]
             product.notes = product_soup["notes"]
             product.quantity = product_soup["requiredquantity"]
-            product.upload_number = product_soup["description"]
+            product.upload_number = product.name.split("-")[1] #product_soup["description"]
             product.type = product_soup["type"]
 
             product.group = self.__find_product_group_for(product_soup)
