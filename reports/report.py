@@ -56,6 +56,7 @@ class Report(object):
                 writer = csv.DictWriter(csv_file, fieldnames = self.headers)
                 writer.writeheader()
                 writer.writerows(report[key])
+        self._delete_processed_files(self.config.FILES_TO_PROCESS)
 
     def __generate_product_list(self, files_to_process):
         products = {}
@@ -88,6 +89,11 @@ class Report(object):
         t = os.path.getmtime(filename)
         date = datetime.datetime.fromtimestamp(t)
         return date.strftime("%Y-%m-%d")
+
+    def _delete_processed_files(self, FILES_TO_PROCESS):
+        for file in FILES_TO_PROCESS:
+            location = os.path.join(self.config.INPUT_DIR, file)
+            os.remove(location)
 
 
 
