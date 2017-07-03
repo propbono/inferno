@@ -1,8 +1,6 @@
 from __future__ import print_function
 
-import sys
-
-from report import Report
+from reports.report import Report
 
 if __name__ == "__main__":
     report = Report()

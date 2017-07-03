@@ -1,15 +1,9 @@
-from xml.dom import minidom
-import os
-import pypdftk
-
-
-from layout import *
 from bs4 import BeautifulSoup
 
-
-from stock import Stock
-from productGroup import ProductGroup
-from product import Product
+from parse.layout import Layout
+from parse.stock import Stock
+from parse.productgroup import ProductGroup
+from parse.product import Product
 
 
 class Parse(object):

@@ -2,26 +2,23 @@ import csv
 import datetime
 import os
 import sys
-from parse import Parse
+from parse.parse import Parse
+from configuration.configuration import Configuration
 
 class Report(object):
 
     def __init__(self):
 
         self.headers = ["plated_date", "project_name", "printing_press", "layout_name", "stock_name", "notes", "stock_size", "printing_method", "quantity","status", "number_of_clients"]
-        self.program_dir = os.path.dirname(sys.argv[0])
-        self.prepped_file = "N:\\"
-        self.mxml_dir_out = os.path.join(self.prepped_file, "OUT")
-        self.mxml_dir_in = os.path.join(self.prepped_file, "IN")
-        self.files_to_process = [f for f in os.listdir(self.mxml_dir_in) if f.endswith(".mxml")]
-        self.products = []
+        self.config = Configuration()
+        self.products = {}
 
     def __generate_report(self, files_to_process):
         report = {}
         for file in files_to_process:
             try:
                 # print_info_about_layouts()
-                location = os.path.join(self.mxml_dir_in, file)
+                location = os.path.join(self.config.INPUT_DIR, file)
                 xml = Parse(location)
                 project_name = xml.get_project_name_bs4()
                 printing_press = xml.get_printing_press_bs4()
@@ -51,23 +48,12 @@ class Report(object):
         return report
 
     def save_report_to_csv(self):
-        csv_file_name = os.path.join(os.path.join(self.mxml_dir_out,"report.csv"))
-        report = self.__generate_report(self.files_to_process)
+        csv_file_name = os.path.join(os.path.join(self.config.OUTPUT_DIR,"report.csv"))
+        report = self.__generate_report(self.config.FILES_TO_PROCESS)
 
         for key in report.keys():
             with open(csv_file_name, 'a', newline ='') as csv_file:
                 writer = csv.DictWriter(csv_file, fieldnames = self.headers)
-                writer.writeheader()
-                writer.writerows(report[key])
-
-    def save_linda_report_to_csv(self):
-        csv_file_name = os.path.join(os.path.join(self.mxml_dir_out,"_linda_report.csv"))
-        report = self.__generate_product_list(self.files_to_process)
-        headers = ["date", "name", "upload","client", "size","stock","quantity", "status"]
-
-        for key in report.keys():
-            with open(csv_file_name, 'a', newline ='') as csv_file:
-                writer = csv.DictWriter(csv_file, fieldnames = headers)
                 writer.writeheader()
                 writer.writerows(report[key])
 
@@ -77,7 +63,7 @@ class Report(object):
             try:
 
                 # print_info_about_layouts()
-                location = os.path.join(self.mxml_dir_in, file)
+                location = os.path.join(self.config.INPUT_DIR, file)
                 date = self.__modification_date(location)
                 xml = Parse(location)
                 name = xml.get_project_name_bs4()
